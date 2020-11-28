@@ -386,6 +386,7 @@ resp,body,errs= request.Send(map[string]interface{}{
 ```
 
 这里涉及到一个ASP.NET网站常用的技巧`Postback`，为了降低难度，就不仔细分析它的机制了（类似`ajax`），我们只需要了解它做了什么：POST提交了一个表单，表单参数正常地位于`<form>`标签内即可，但是，它对爬虫来说有个坑，接下来会说
+
 3. 执行返回页面中的`<script>`标签，跳转到`http://jxgl.hdu.edu.cn/xs_main.aspx?xh=[学号]`，也就是我们在浏览器中最终看到的URL
 
 ### 访问教务系统主页
