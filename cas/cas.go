@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/parnurzeal/gorequest"
+	"hduhelp-tweet/wrapper"
 	"io/ioutil"
 	"regexp"
 )
@@ -18,7 +19,7 @@ func Login(userName string, password string) (*gorequest.SuperAgent, error) {
 	if errs != nil {
 		return nil, errs[0]
 	}
-	err := ioutil.WriteFile("cas.html", []byte(body), 0644)
+	err := ioutil.WriteFile(wrapper.GetPath("cas.html"), []byte(body), 0644)
 	if err != nil {
 		panic(err)
 	}
@@ -30,7 +31,10 @@ func Login(userName string, password string) (*gorequest.SuperAgent, error) {
 	if err != nil {
 		panic(err)
 	}
-	var rsaValue = GetRSAValue(userName, password, ltValue)
+	rsaValue, err := GetRSAValue(request, userName, password, ltValue)
+	if err != nil {
+		panic(err)
+	}
 	request.Post(url).Type("form")
 	resp, body, errs = request.Send(map[string]interface{}{
 		"rsa":       rsaValue,
@@ -44,9 +48,12 @@ func Login(userName string, password string) (*gorequest.SuperAgent, error) {
 		return nil, errs[0]
 	}
 	fmt.Println(resp.StatusCode)
-	err = ioutil.WriteFile("resp.html", []byte(body), 0644)
+	err = ioutil.WriteFile(wrapper.GetPath("resp.html"), []byte(body), 0644)
 	if err != nil {
 		panic(err)
+	}
+	if resp.Request.URL.Host != "i.hdu.edu.cn" {
+		return nil, errors.New("fail to login by cas")
 	}
 	return request, nil
 }
